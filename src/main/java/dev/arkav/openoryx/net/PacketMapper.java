@@ -12,9 +12,10 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 public class PacketMapper {
-    private static Map<Byte, PacketType> map;
-    private static Map<PacketType, Byte> reverseMap;
+    private static final Map<Byte, PacketType> map = new HashMap<>();
+    private static final Map<PacketType, Byte> reverseMap = new HashMap<>();
 
+    @Deprecated
     public static void mapIds() {
         mapIds(PacketMapper.class.getResourceAsStream("/packets.xml"));
     }
@@ -24,9 +25,7 @@ public class PacketMapper {
     }
 
     private static void mapIds(InputStream is) {
-        map = new HashMap<>();
         map.clear();
-        reverseMap = new HashMap<>();
         reverseMap.clear();
         try {
             SAXBuilder builder = new SAXBuilder();

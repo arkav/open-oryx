@@ -12,9 +12,10 @@ import java.util.ArrayList;
 
 @SuppressWarnings("ALL")
 public class GameInfoMapper {
-    public static ArrayList<ObjectInfo> objects = new ArrayList<>();
-    public static ArrayList<TileInfo> tiles = new ArrayList<>();
+    public static final ArrayList<ObjectInfo> objects = new ArrayList<>();
+    public static final ArrayList<TileInfo> tiles = new ArrayList<>();
 
+    @Deprecated
     public static void mapObjects() {
         mapObjects(GameInfoMapper.class.getResourceAsStream("/objects.xml"));
     }
@@ -49,6 +50,7 @@ public class GameInfoMapper {
         }
     }
 
+    @Deprecated
     public static void mapGroundTypes() {
         mapGroundTypes(GameInfoMapper.class.getResourceAsStream("/tiles.xml"));
     }
