@@ -1,5 +1,14 @@
 package dev.arkav.openoryx.game.appspot;
 
-public class Endpoints {
-    public static final String CHAR_LIST = "https://realmofthemadgod.appspot.com/char/list";
+public enum Endpoints {
+    CHAR_LIST("https://realmofthemadgod.appspot.com/char/list")
+    ;
+    private final String url;
+    Endpoints(String url) {
+        this.url = url;
+    }
+
+    public EndpointBuilder builder() {
+        return new EndpointBuilder(this.url);
+    }
 }

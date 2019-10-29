@@ -1,12 +1,12 @@
 package dev.arkav.openoryx.net;
 
-import dev.arkav.openoryx.util.logging.Logger;
 import dev.arkav.openoryx.net.crypto.HexUtil;
 import dev.arkav.openoryx.net.crypto.RC4;
 import dev.arkav.openoryx.net.data.Packet;
-import dev.arkav.openoryx.net.listeners.ListenerStore;
+import dev.arkav.openoryx.net.listeners.Invokeable;
 import dev.arkav.openoryx.net.listeners.ListenerType;
 import dev.arkav.openoryx.net.packets.PacketType;
+import dev.arkav.openoryx.util.logging.Logger;
 
 import java.io.*;
 import java.net.Socket;
@@ -26,13 +26,13 @@ public class ProxyIO implements Runnable {
     private RC4 inRC4;
     private RC4 outRC4;
 
-    private ListenerStore listeners;
+    private Invokeable listeners;
 
     private ProxyIO partner;
 
     private ArrayList<PacketType> blocked;
 
-    public ProxyIO(Socket socket, ListenerStore listeners, final String RC4_INCOMING_KEY, final String RC4_OUTGOING_KEY) throws IOException {
+    public ProxyIO(Socket socket, Invokeable listeners, final String RC4_INCOMING_KEY, final String RC4_OUTGOING_KEY) throws IOException {
         this.listeners = listeners;
         this.RC4_INCOMING_KEY = RC4_INCOMING_KEY;
         this.RC4_OUTGOING_KEY = RC4_OUTGOING_KEY;

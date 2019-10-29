@@ -1,15 +1,15 @@
 package dev.arkav.openoryx.net;
 
 import dev.arkav.openoryx.Environment;
-import dev.arkav.openoryx.util.logging.Logger;
 import dev.arkav.openoryx.game.models.Server;
 import dev.arkav.openoryx.net.crypto.HexUtil;
 import dev.arkav.openoryx.net.crypto.RC4;
 import dev.arkav.openoryx.net.data.Packet;
-import dev.arkav.openoryx.net.listeners.ListenerStore;
+import dev.arkav.openoryx.net.listeners.Invokeable;
 import dev.arkav.openoryx.net.listeners.ListenerType;
 import dev.arkav.openoryx.net.packets.PacketType;
 import dev.arkav.openoryx.net.packets.c2s.HelloPacket;
+import dev.arkav.openoryx.util.logging.Logger;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -28,17 +28,16 @@ public class PacketIO implements Runnable {
     private RC4 inRC4;
     private RC4 outRC4;
     // Listener cache
-    private ListenerStore listeners;
+    private Invokeable listeners;
 
     /**
      * PacketIO
      * @param server Server to connect to.
      * @param hello Hello Packet to send to the server.
-     * @param hooks Packet listeners.
-     * @throws IOException
+     * @param listeners Packet listeners.
      */
-    public PacketIO(Server server, HelloPacket hello, ListenerStore hooks) throws IOException {
-        this.connect(new Socket(server.getHost(), server.getPort()), hello, hooks);
+    public PacketIO(Server server, HelloPacket hello, Invokeable listeners) throws IOException {
+        this.connect(new Socket(server.getHost(), server.getPort()), hello, listeners);
     }
 
     /**
@@ -47,16 +46,15 @@ public class PacketIO implements Runnable {
      * @param proxy Needs to be a socks proxy {new java.net.Proxy(Proxy.Type.SOCKS, new InetSocketAddress(host, port))}
      * @param hello Hello Packet to send to the server.
      * @param listeners Packet listeners.
-     * @throws IOException
      */
-    public PacketIO(Server server, Proxy proxy, HelloPacket hello, ListenerStore listeners) throws IOException {
+    public PacketIO(Server server, Proxy proxy, HelloPacket hello, Invokeable listeners) throws IOException {
         Socket s = new Socket(proxy);
 
         s.connect(new InetSocketAddress(server.getHost(), server.getPort()));
         this.connect(s, hello, listeners);
     }
 
-    private void connect(Socket socket, HelloPacket hello, ListenerStore listeners) throws IOException {
+    private void connect(Socket socket, HelloPacket hello, Invokeable listeners) throws IOException {
         this.socket = socket;
         this.socket.setTcpNoDelay(true);
         this.input = new DataInputStream(this.socket.getInputStream());

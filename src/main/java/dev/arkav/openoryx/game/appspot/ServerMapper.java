@@ -1,9 +1,9 @@
 package dev.arkav.openoryx.game.appspot;
 
-import dev.arkav.openoryx.util.logging.Logger;
 import dev.arkav.openoryx.game.models.Server;
 import dev.arkav.openoryx.util.Http;
 import dev.arkav.openoryx.util.XML;
+import dev.arkav.openoryx.util.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,7 +41,7 @@ public class ServerMapper {
 
     private static void mapFromAppspot() {
         try {
-            String raw = Http.get(new EndpointFactory(Endpoints.CHAR_LIST).append("guid", String.valueOf(Math.random() * 10000000)).get());
+            String raw = Http.get(Endpoints.CHAR_LIST.builder().append("guid", String.valueOf(Math.random() * 10000000)).build());
             Document xml = XML.parseText(raw);
 
             xml.getDocumentElement().normalize();

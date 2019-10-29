@@ -1,23 +1,22 @@
 package dev.arkav.openoryx.impl;
 
-import dev.arkav.openoryx.game.models.*;
-import dev.arkav.openoryx.net.data.MoveRecord;
-import dev.arkav.openoryx.net.packets.c2s.*;
-import dev.arkav.openoryx.util.logging.Logger;
 import dev.arkav.openoryx.game.StatusParser;
-import dev.arkav.openoryx.game.appspot.EndpointFactory;
 import dev.arkav.openoryx.game.appspot.Endpoints;
+import dev.arkav.openoryx.game.models.*;
 import dev.arkav.openoryx.net.PacketIO;
 import dev.arkav.openoryx.net.crypto.RSA;
+import dev.arkav.openoryx.net.data.MoveRecord;
 import dev.arkav.openoryx.net.data.ObjectData;
 import dev.arkav.openoryx.net.data.ObjectStatusData;
 import dev.arkav.openoryx.net.data.WorldPosData;
 import dev.arkav.openoryx.net.listeners.ListenerStore;
 import dev.arkav.openoryx.net.listeners.ListenerType;
 import dev.arkav.openoryx.net.packets.PacketType;
+import dev.arkav.openoryx.net.packets.c2s.*;
+import dev.arkav.openoryx.net.packets.s2c.*;
 import dev.arkav.openoryx.util.Http;
 import dev.arkav.openoryx.util.XML;
-import dev.arkav.openoryx.net.packets.s2c.*;
+import dev.arkav.openoryx.util.logging.Logger;
 import org.w3c.dom.NodeList;
 
 import java.io.IOException;
@@ -94,11 +93,13 @@ public class Client {
                     LoadPacket load = new LoadPacket();
                     load.charId = this.gameState.characterId;
                     load.isFromArena = false;
+                    load.isChallenger = false;
                     this.io.send(load);
                 } else {
                     CreatePacket createPacket = new CreatePacket();
                     createPacket.classType = 782; // Wizard
                     createPacket.skinType = 0;
+                    createPacket.isChallenger = false;
                     Logger.log(this.account.getGuid(), "Creating new character!");
                     this.io.send(createPacket);
                 }
@@ -173,7 +174,7 @@ public class Client {
 
         Logger.log(this.account.getGuid(), "Connecting to: " + server.getName());
 
-        HelloPacket hello = new HelloPacket();
+        HelloPacket hello = HelloPacket.createDefault();
         hello.buildVersion = gs.buildVersion;
         hello.gameId = gs.gameId;
         hello.guid = RSA.encrypt(this.account.getGuid());
@@ -191,7 +192,11 @@ public class Client {
     }
 
     private String loadCharList() throws IOException {
-        String endpoint = new EndpointFactory(Endpoints.CHAR_LIST).append("guid", this.account.getGuid()).append("password", this.account.getPassword()).get();
+        String endpoint = Endpoints.CHAR_LIST.builder()
+                .append("guid", this.account.getGuid())
+                .append("password", this.account.getPassword())
+                .append("challenger", "false")
+                .build();
         return this.proxy == null ? Http.get(endpoint) : Http.proxiedGet(endpoint, 5000, this.proxy);
     }
 

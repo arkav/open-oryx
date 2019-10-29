@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ListenerStore {
+public class ListenerStore implements Invokeable {
     private Map<PacketType, ArrayList<PacketListener<? extends Packet>>> packetMap;
     private Map<ListenerType, ArrayList<IOListener>> ioMap;
 
@@ -31,6 +31,7 @@ public class ListenerStore {
         this.ioMap.get(type).add(method);
     }
 
+    @Override
     public void invoke(ListenerType type) throws Exception {
         if (this.ioMap.containsKey(type)) {
             for (IOListener method : this.ioMap.get(type)) {
@@ -39,6 +40,7 @@ public class ListenerStore {
         }
     }
 
+    @Override
     public void invoke(Packet p) throws IOException {
         if (this.packetMap.containsKey(PacketType.typeOf(p))) {
             for (PacketListener method : this.packetMap.get(PacketType.typeOf(p))) {
@@ -55,6 +57,7 @@ public class ListenerStore {
         this.packetMap.get(type).clear();
     }
 
+    @Override
     public boolean has(PacketType pt) {
         return this.packetMap.containsKey(pt);
     }
