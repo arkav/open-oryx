@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'dev.arkav'
-version '1.2.0'
+version '2.0.0'
 
 sourceCompatibility = 1.8
 
@@ -17,10 +17,18 @@ dependencies {
     compile 'org.jdom:jdom2:2.0.6'
 }
 
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+
+            artifact sourceJar {
+                classifier "sources"
+            }
         }
     }
 }
