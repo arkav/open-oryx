@@ -48,6 +48,10 @@ public class Client {
     protected PacketIO io;
     protected ListenerStore ls;
 
+    public boolean isConnected() {
+        return connected;
+    }
+
     protected boolean connected;
     protected boolean destroyed;
 
@@ -86,6 +90,7 @@ public class Client {
 
         this.ls.hook(PacketType.MAPINFO, (MapInfoPacket mapInfo) -> {
             this.mapInfo = new MapInfo(mapInfo.name, mapInfo.height, mapInfo.width);
+            this.gameState.connectionGuid = mapInfo.connectionGuid;
             Logger.log(account.getGuid(), "Connected to " + mapInfo.name);
             if(!this.sentLoad) {
                 if (this.gameState.characterId > 0) {
@@ -183,6 +188,7 @@ public class Client {
         hello.keyTime = gs.keyTime;
         hello.gameNet = "rotmg";
         hello.playPlatform = "rotmg";
+        hello.previousConnectionGuid = gs.connectionGuid;
         this.sentLoad = false;
         try {
             this.io = this.proxy == null ? new PacketIO(server, hello, this.ls) : new PacketIO(server, this.proxy, hello, this.ls);

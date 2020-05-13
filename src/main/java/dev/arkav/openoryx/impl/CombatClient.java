@@ -1,10 +1,9 @@
 package dev.arkav.openoryx.impl;
 
-import dev.arkav.openoryx.game.models.*;
-import dev.arkav.openoryx.util.logging.Logger;
 import dev.arkav.openoryx.game.info.GameInfoMapper;
 import dev.arkav.openoryx.game.info.ObjectInfo;
 import dev.arkav.openoryx.game.info.TileInfo;
+import dev.arkav.openoryx.game.models.*;
 import dev.arkav.openoryx.net.data.GroundTileData;
 import dev.arkav.openoryx.net.data.ObjectData;
 import dev.arkav.openoryx.net.data.ObjectStatusData;
@@ -15,24 +14,25 @@ import dev.arkav.openoryx.net.packets.c2s.EnemyHitPacket;
 import dev.arkav.openoryx.net.packets.c2s.PlayerHitPacket;
 import dev.arkav.openoryx.net.packets.c2s.ShootAckPacket;
 import dev.arkav.openoryx.net.packets.s2c.*;
+import dev.arkav.openoryx.util.logging.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("WeakerAccess")
+@Deprecated // this needs to be redone in an update loop mabe with some nice async, which will fuck then entire idea of IO blocking it's thread
+            // it is, most likely not going to be done, seeing as I havent needed this ever really.
 public class CombatClient extends Client implements Runnable {
-    //protected Map<Integer, ObjectStatus> loadedPlayers;
-    //protected Map<Integer, Enemy> enemies;
     /**
      * Mostly unimportant game entities
      */
-    protected final ConcurrentHashMap<Integer, Entity> entities;
+    protected final HashMap<Integer, Entity> entities;
     /**
      * Living game entities that are important
      */
-    protected final ConcurrentHashMap<Integer, LivingEntity> livingEntities;
+    protected final HashMap<Integer, LivingEntity> livingEntities;
     /**
      * Projectiles, must me synchronized!
      */
@@ -58,8 +58,8 @@ public class CombatClient extends Client implements Runnable {
         super(account);
         new Thread(this).start();
 
-        this.entities = new ConcurrentHashMap<>();
-        this.livingEntities = new ConcurrentHashMap<>();
+        this.entities = new HashMap<>();
+        this.livingEntities = new HashMap<>();
         this.projectiles = new ArrayList<>();
 
         this.ls.hook(ListenerType.CONNECT, () -> {
@@ -85,9 +85,13 @@ public class CombatClient extends Client implements Runnable {
                     this.chp = this.data.hp;
                 }
                 if (go.isEnemy() || go.isPlayer()) {
-                    this.livingEntities.put(obj.status.objectId, new LivingEntity(obj.status, go));
+                    synchronized (this.livingEntities) {
+                        this.livingEntities.put(obj.status.objectId, new LivingEntity(obj.status, go));
+                    }
                 } else {
-                    this.entities.put(obj.status.objectId, new Entity(obj.status, go));
+                    synchronized (this.entities) {
+                        this.entities.put(obj.status.objectId, new Entity(obj.status, go));
+                    }
                 }
                 // Add wall entities as unwalkable tiles
                 if (go.isFullOccupy() || go.isEnemyOccupySquare() || go.isOccupySquare()) this.nowalk.set(obj.status.pos, false);
@@ -99,8 +103,12 @@ public class CombatClient extends Client implements Runnable {
             }
 
             for (int drop : update.drops) {
-                this.entities.remove(drop);
-                this.livingEntities.remove(drop);
+                synchronized (this.entities) {
+                    this.entities.remove(drop);
+                }
+                synchronized (this.livingEntities) {
+                    this.livingEntities.remove(drop);
+                }
             }
         });
 
@@ -186,8 +194,10 @@ public class CombatClient extends Client implements Runnable {
                 lastFrame = this.getTime();
                 try {
                     // Update enemies
-                    for (LivingEntity e : this.livingEntities.values()) {
-                        e.update(delta, this.lastTickId);
+                    synchronized (this.livingEntities) {
+                        for (LivingEntity e : this.livingEntities.values()) {
+                            e.update(delta, this.lastTickId);
+                        }
                     }
                     this.checkProjectiles();
                 } catch (IOException e) {
@@ -250,13 +260,14 @@ public class CombatClient extends Client implements Runnable {
                 } else {
                     LivingEntity closest = null;
                     double closestDistance = 0.25f;
-
-                    for (LivingEntity e : this.livingEntities.values()) {
-                        if (e.getInfo().isEnemy()) {
-                            double dist = e.getPos().distanceTo(p.currentPos);
-                            if (dist < closestDistance) {
-                                closestDistance = dist;
-                                closest = e;
+                    synchronized (this.livingEntities) {
+                        for (LivingEntity e : this.livingEntities.values()) {
+                            if (e.getInfo().isEnemy()) {
+                                double dist = e.getPos().distanceTo(p.currentPos);
+                                if (dist < closestDistance) {
+                                    closestDistance = dist;
+                                    closest = e;
+                                }
                             }
                         }
                     }
@@ -282,11 +293,11 @@ public class CombatClient extends Client implements Runnable {
         return nowalk;
     }
 
-    public ConcurrentHashMap<Integer, Entity> getEntities() {
+    public HashMap<Integer, Entity> getEntities() {
         return entities;
     }
 
-    public ConcurrentHashMap<Integer, LivingEntity> getLivingEntities() {
+    public HashMap<Integer, LivingEntity> getLivingEntities() {
         return livingEntities;
     }
 
