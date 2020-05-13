@@ -91,6 +91,42 @@ public class StatusParser {
                 case StatType.GUILD_RANK_STAT:
                     current.guildRank = stat.stringStatValue;
                     break;
+                case StatType.INVENTORY_0_STAT:
+                    current.inventory[0] = stat.statValue;
+                    break;
+                case StatType.INVENTORY_1_STAT:
+                    current.inventory[1] = stat.statValue;
+                    break;
+                case StatType.INVENTORY_2_STAT:
+                    current.inventory[2] = stat.statValue;
+                    break;
+                case StatType.INVENTORY_3_STAT:
+                    current.inventory[3] = stat.statValue;
+                    break;
+                case StatType.INVENTORY_4_STAT:
+                    current.inventory[4] = stat.statValue;
+                    break;
+                case StatType.INVENTORY_5_STAT:
+                    current.inventory[5] = stat.statValue;
+                    break;
+                case StatType.INVENTORY_6_STAT:
+                    current.inventory[6] = stat.statValue;
+                    break;
+                case StatType.INVENTORY_7_STAT:
+                    current.inventory[7] = stat.statValue;
+                    break;
+                case StatType.INVENTORY_8_STAT:
+                    current.inventory[8] = stat.statValue;
+                    break;
+                case StatType.INVENTORY_9_STAT:
+                    current.inventory[9] = stat.statValue;
+                    break;
+                case StatType.INVENTORY_10_STAT:
+                    current.inventory[10] = stat.statValue;
+                    break;
+                case StatType.INVENTORY_11_STAT:
+                    current.inventory[11] = stat.statValue;
+                    break;
             }
         }
         return current;

@@ -40,6 +40,7 @@ public class GameInfoMapper {
                 try {
                     objects.add(new ObjectInfo(e));
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                     errored++;
                 }
             }

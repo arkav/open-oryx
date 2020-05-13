@@ -3,9 +3,9 @@ package dev.arkav.openoryx.game.info;
 
 import org.jdom2.Element;
 
-import static dev.arkav.openoryx.util.OptionalXml.*;
-
 import java.util.ArrayList;
+
+import static dev.arkav.openoryx.util.OptionalXml.*;
 
 @SuppressWarnings("WeakerAccess")
 public class ObjectInfo {
@@ -116,7 +116,7 @@ public class ObjectInfo {
     /**
      * Projectiles
      */
-    private final ProjectileInfo[] projectiles;
+    private ProjectileInfo[] projectiles;
 
     private TextureInfo texture;
     private TextureInfo animatedTexture;
@@ -159,7 +159,8 @@ public class ObjectInfo {
                 projectiles.add(new ProjectileInfo(elm));
             }
         }
-        this.projectiles = (ProjectileInfo[])projectiles.toArray();
+        this.projectiles = new ProjectileInfo[projectiles.size()];
+        this.projectiles = projectiles.toArray(this.projectiles);
 
         this.texture = child(e, "Texture") ? new TextureInfo(e.getChild("Texture")) : TextureInfo.DEFAULT;
         this.animatedTexture = child(e, "AnimatedTexture") ? new TextureInfo(e.getChild("AnimatedTexture")) : TextureInfo.DEFAULT;

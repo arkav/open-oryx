@@ -27,4 +27,5 @@ public class ObjectStatus {
     public String guildName;
     public String guildRank;
     public int classIn;
+    public int[] inventory = new int[12];
 }

@@ -12,11 +12,14 @@ public class GameState {
 
     public int keyTime;
 
+    public String connectionGuid;
+
     public GameState(String buildVersion) {
         this.buildVersion = buildVersion;
         this.characterId = 0;
         this.gameId = -2;
         this.key = new byte[0];
         this.keyTime = -1;
+        this.connectionGuid = "";
     }
 }

@@ -29,7 +29,7 @@ public class ProjectileInfo {
     private final boolean multiHit;
     private final boolean passesCover;
 
-    private final ConditionEffect[] effects;
+    private ConditionEffect[] effects;
 
     private final TextureInfo texture;
 
@@ -87,7 +87,8 @@ public class ProjectileInfo {
             ));
         }
 
-        this.effects = (ConditionEffect[])effects.toArray();
+        this.effects = new ConditionEffect[effects.size()];
+        this.effects = effects.toArray(this.effects);
 
         this.texture = OptionalXml.child(e, "Texture") ? new TextureInfo(e) : TextureInfo.DEFAULT;
     }
