@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ListenerStore implements Invokeable {
+public class ListenerStore implements IListener {
     private Map<PacketType, ArrayList<PacketListener<? extends Packet>>> packetMap;
     private Map<ListenerType, ArrayList<IOListener>> ioMap;
 

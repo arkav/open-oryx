@@ -13,6 +13,7 @@ public class MapInfoPacket implements Packet {
 
     public String name;
     public String displayName;
+    public String realmName;
 
     public int difficulty;
 
@@ -24,6 +25,10 @@ public class MapInfoPacket implements Packet {
 
     public boolean showDisplays;
 
+    public short maxPlayers;
+
+    public String connectionGuid;
+
     public String[] clientXML = new String[0];
     public String[] extraXML = new String[0];
 
@@ -34,11 +39,14 @@ public class MapInfoPacket implements Packet {
         this.height = in.readInt();
         this.name = in.readUTF();
         this.displayName = in.readUTF();
+        this.realmName = in.readUTF();
         this.fp = in.readInt();
         this.background = in.readInt();
         this.difficulty = in.readInt();
         this.allowPlayerTeleport = in.readBoolean();
         this.showDisplays = in.readBoolean();
+        this.maxPlayers = in.readShort();
+        this.connectionGuid = in.readUTF();
         this.clientXML = new String[in.readShort()];
         for (int i = 0; i < clientXML.length; i++) {
             byte[] bytes = new byte[in.readInt()];
@@ -58,11 +66,14 @@ public class MapInfoPacket implements Packet {
         out.writeInt(this.height);
         out.writeUTF(this.name);
         out.writeUTF(this.displayName);
+        out.writeUTF(this.realmName);
         out.writeInt(this.fp);
         out.writeInt(this.background);
         out.writeInt(this.difficulty);
         out.writeBoolean(this.allowPlayerTeleport);
         out.writeBoolean(this.showDisplays);
+        out.writeShort(this.maxPlayers);
+        out.writeUTF(this.connectionGuid);
         out.writeShort((short)this.clientXML.length);
         for (String xml : this.clientXML) {
             byte[] bytes = xml.getBytes();

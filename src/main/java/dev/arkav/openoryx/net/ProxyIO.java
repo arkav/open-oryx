@@ -1,9 +1,10 @@
 package dev.arkav.openoryx.net;
 
+import dev.arkav.openoryx.Environment;
 import dev.arkav.openoryx.net.crypto.HexUtil;
 import dev.arkav.openoryx.net.crypto.RC4;
 import dev.arkav.openoryx.net.data.Packet;
-import dev.arkav.openoryx.net.listeners.Invokeable;
+import dev.arkav.openoryx.net.listeners.IListener;
 import dev.arkav.openoryx.net.listeners.ListenerType;
 import dev.arkav.openoryx.net.packets.PacketType;
 import dev.arkav.openoryx.util.logging.Logger;
@@ -26,13 +27,13 @@ public class ProxyIO implements Runnable {
     private RC4 inRC4;
     private RC4 outRC4;
 
-    private Invokeable listeners;
+    private IListener listeners;
 
     private ProxyIO partner;
 
     private ArrayList<PacketType> blocked;
 
-    public ProxyIO(Socket socket, Invokeable listeners, final String RC4_INCOMING_KEY, final String RC4_OUTGOING_KEY) throws IOException {
+    public ProxyIO(Socket socket, IListener listeners, final String RC4_INCOMING_KEY, final String RC4_OUTGOING_KEY) throws IOException {
         this.listeners = listeners;
         this.RC4_INCOMING_KEY = RC4_INCOMING_KEY;
         this.RC4_OUTGOING_KEY = RC4_OUTGOING_KEY;
@@ -64,6 +65,7 @@ public class ProxyIO implements Runnable {
 
                 int bufSize = this.input.readInt() - 5;
                 byte id = this.input.readByte();
+
                 PacketType type = PacketMapper.get(id);
                 byte[] buf = new byte[bufSize];
                 this.input.readFully(buf);
@@ -95,8 +97,8 @@ public class ProxyIO implements Runnable {
                     this.partner.send(type, dec);
                 }
             } catch (IOException e) {
-                //Logger.log("DEBUG", "isclient " + (this.RC4_INCOMING_KEY == Environment.RC4_CLIENT_KEY));
-                //e.printStackTrace();
+                Logger.log("DEBUG", "isclient " + (this.RC4_INCOMING_KEY == Environment.RC4_CLIENT_KEY));
+                e.printStackTrace();
                 this.disconnect();
             }
         }

@@ -5,7 +5,7 @@ import dev.arkav.openoryx.net.packets.PacketType;
 
 import java.io.IOException;
 
-public interface Invokeable {
+public interface IListener {
     void invoke(Packet p) throws IOException;
     void invoke(ListenerType l) throws Exception;
     default boolean has(PacketType type) {

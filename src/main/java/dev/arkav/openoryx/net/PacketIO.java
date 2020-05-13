@@ -5,7 +5,7 @@ import dev.arkav.openoryx.game.models.Server;
 import dev.arkav.openoryx.net.crypto.HexUtil;
 import dev.arkav.openoryx.net.crypto.RC4;
 import dev.arkav.openoryx.net.data.Packet;
-import dev.arkav.openoryx.net.listeners.Invokeable;
+import dev.arkav.openoryx.net.listeners.IListener;
 import dev.arkav.openoryx.net.listeners.ListenerType;
 import dev.arkav.openoryx.net.packets.PacketType;
 import dev.arkav.openoryx.net.packets.c2s.HelloPacket;
@@ -28,7 +28,7 @@ public class PacketIO implements Runnable {
     private RC4 inRC4;
     private RC4 outRC4;
     // Listener cache
-    private Invokeable listeners;
+    private IListener listeners;
 
     /**
      * PacketIO
@@ -36,7 +36,7 @@ public class PacketIO implements Runnable {
      * @param hello Hello Packet to send to the server.
      * @param listeners Packet listeners.
      */
-    public PacketIO(Server server, HelloPacket hello, Invokeable listeners) throws IOException {
+    public PacketIO(Server server, HelloPacket hello, IListener listeners) throws IOException {
         this.connect(new Socket(server.getHost(), server.getPort()), hello, listeners);
     }
 
@@ -47,14 +47,14 @@ public class PacketIO implements Runnable {
      * @param hello Hello Packet to send to the server.
      * @param listeners Packet listeners.
      */
-    public PacketIO(Server server, Proxy proxy, HelloPacket hello, Invokeable listeners) throws IOException {
+    public PacketIO(Server server, Proxy proxy, HelloPacket hello, IListener listeners) throws IOException {
         Socket s = new Socket(proxy);
 
         s.connect(new InetSocketAddress(server.getHost(), server.getPort()));
         this.connect(s, hello, listeners);
     }
 
-    private void connect(Socket socket, HelloPacket hello, Invokeable listeners) throws IOException {
+    private void connect(Socket socket, HelloPacket hello, IListener listeners) throws IOException {
         this.socket = socket;
         this.socket.setTcpNoDelay(true);
         this.input = new DataInputStream(this.socket.getInputStream());

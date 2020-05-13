@@ -24,18 +24,19 @@ public class HelloPacket implements Packet {
     public String platformToken;
     public String userToken;
     public String clientToken;
+    public String previousConnectionGuid;
 
     public void write(DataOutput out) throws IOException {
-        out.writeUTF(this.buildVersion);
-        out.writeInt(this.gameId);
-        out.writeUTF(this.guid);
+        out.writeUTF(this.buildVersion); //
+        out.writeInt(this.gameId); //
+        out.writeUTF(this.guid); //
         out.writeInt((int)Math.round((Math.random() * 1000000000))); //random1
         out.writeUTF(this.password);
         out.writeInt((int)Math.round((Math.random() * 1000000000))); //random2
         out.writeUTF(this.secret);
-        out.writeInt(this.keyTime);
-        out.writeShort(this.key.length);
-        out.write(this.key);
+        out.writeInt(this.keyTime); //
+        out.writeShort(this.key.length); //
+        out.write(this.key); //
         byte[] mapJSON = this.mapJSON.getBytes();
         out.writeInt(mapJSON.length);
         out.write(mapJSON);
@@ -46,6 +47,7 @@ public class HelloPacket implements Packet {
         out.writeUTF(this.platformToken);
         out.writeUTF(this.userToken);
         out.writeUTF(this.clientToken);
+        out.writeUTF(this.previousConnectionGuid);
     }
 
     public void read(DataInput in) throws IOException {
@@ -69,6 +71,7 @@ public class HelloPacket implements Packet {
         this.platformToken = in.readUTF();
         this.userToken = in.readUTF();
         this.clientToken = in.readUTF();
+        this.previousConnectionGuid = in.readUTF();
     }
 
     public static HelloPacket createDefault() {
